@@ -107,5 +107,17 @@
       CLIQUE PARA ACESSAR <span class="arrow">→</span>
     </a>
   </div>
+<script>
+  // Link de produto vindo do atendimento: loja.anjosdoamorshop.com.br/?p=nome-do-produto
+  (function () {
+    var p = new URLSearchParams(location.search).get('p');
+    if (!p || !/^[a-z0-9-]{1,120}$/.test(p)) return; // sem ?p= a página fica igual
+    var botao = document.querySelector('.cta-btn');
+    if (botao) {
+      botao.href = 'https://www.anjosdoamorshop.com.br/produtos/' + p +
+                   '/?utm_source=whatsapp&utm_medium=atendimento-ia';
+    }
+  })();
+</script>
 </body>
 </html>
