@@ -108,15 +108,33 @@
     </a>
   </div>
 <script>
-  // Link de produto vindo do atendimento: loja.anjosdoamorshop.com.br/?p=nome-do-produto
+  // Links que chegam nesta página:
+  //  ?p=nome-do-produto      -> botão vai para /produtos/nome-do-produto/ (atendimento)
+  //  ?d=caminho/da-pagina    -> botão vai para /caminho/da-pagina/ (campanhas WhatsApp/Meta)
+  //  utm_source, utm_medium, utm_campaign, utm_content, utm_term -> repassados para o botão
+  //  Sem nenhum desses parâmetros a página fica igual.
   (function () {
-    var p = new URLSearchParams(location.search).get('p');
-    if (!p || !/^[a-z0-9-]{1,120}$/.test(p)) return; // sem ?p= a página fica igual
+    var q = new URLSearchParams(location.search);
     var botao = document.querySelector('.cta-btn');
-    if (botao) {
-      botao.href = 'https://www.anjosdoamorshop.com.br/produtos/' + p +
-                   '/?utm_source=whatsapp&utm_medium=atendimento-ia';
+    if (!botao) return;
+    var BASE = 'https://www.anjosdoamorshop.com.br';
+    var p = q.get('p');
+    var d = q.get('d');
+    var utm = [];
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(function (k) {
+      var v = q.get(k);
+      if (v && /^[A-Za-z0-9._-]{1,100}$/.test(v)) utm.push(k + '=' + encodeURIComponent(v));
+    });
+    var path = null;
+    if (p && /^[a-z0-9-]{1,120}$/.test(p)) {
+      path = '/produtos/' + p + '/';
+    } else if (d && d.length <= 150 && /^\/?[a-z0-9-]+(\/[a-z0-9-]+)*\/?$/.test(d)) {
+      path = '/' + d.replace(/^\/+|\/+$/g, '') + '/';
     }
+    if (!path && !utm.length) return;
+    if (!path) path = '/';
+    var qs = utm.length ? utm.join('&') : 'utm_source=whatsapp&utm_medium=atendimento-ia';
+    botao.href = BASE + path + '?' + qs;
   })();
 </script>
 </body>
